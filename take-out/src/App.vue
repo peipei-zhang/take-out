@@ -1,7 +1,7 @@
 <template>
   <div>
-  <v-header></v-header>
-  <div class="tab border-1px">
+  <v-header v-bind:seller='seller'></v-header>
+  <div class="tab border-bottom-1px">
   	<div class="tab-item">
        <router-link to='/goods'>商品</router-link>
     </div>
@@ -19,7 +19,24 @@
 <script type='text/ecmascript-6'>
     import header from './components/header/header.vue';
 
+    const ERR_OK = 0;
+
     export default {
+       data() {
+          return {
+            seller: {}
+          };
+       },
+       created() {
+         this.$axios.get('/api/seller').then((response) => {
+             console.log(response);
+             response = response.data;
+             if (response.errno === ERR_OK) {
+                this.seller = response.data;
+                console.log(response.data);
+             }
+         });
+       },
        components: {
           'v-header': header
        }
@@ -35,7 +52,7 @@
     height:40px
     line-height:40px
     // border-bottom:1px solid #ccc;
-    border-1px(rgba(7,17,27,0.1))
+    border-bottom-1px(rgba(7,17,27,0.1))
     .tab-item
       flex:1
       text-align:center
