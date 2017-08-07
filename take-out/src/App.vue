@@ -29,11 +29,9 @@
        },
        created() {
          this.$axios.get('/api/seller').then((response) => {
-             console.log(response);
              response = response.data;
              if (response.errno === ERR_OK) {
                 this.seller = response.data;
-                console.log(response.data);
              }
          });
        },
@@ -51,7 +49,6 @@
     width:100%
     height:40px
     line-height:40px
-    // border-bottom:1px solid #ccc;
     border-bottom-1px(rgba(7,17,27,0.1))
     .tab-item
       flex:1
