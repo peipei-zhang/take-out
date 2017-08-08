@@ -1,17 +1,17 @@
 <template>
 	<div class="goods">
-	     <div class="menu-wrapper">
+	     <div class="menu-wrapper" ref='menuwrapper'>
          <ul>
-            <li v-for='item in goods' class="menu-item">
+            <li v-for='(item,idx) in goods' class="menu-item" :class="{'current':idx===currentIndex}" @click='selectMenu(idx,$event)'>
                <span class="text border-bottom-1px">
                  <span v-show='item.type>0' class="icon" :class='classMap[item.type]'></span>{{item.name}}
                </span>
              </li>
           </ul> 
         </div>
-	   <div class="foods-wrapper">
+	   <div class="foods-wrapper" ref='foodswrapper'>
         <ul>
-           <li v-for='item in goods' class='food-list'>
+           <li v-for='item in goods' class='food-list food-list-hook'>
                <h1 class="title">{{item.name}}</h1>
                <ul>
                  <li v-for='food in item.foods' class='food-item border-bottom-1px'>
@@ -35,10 +35,14 @@
            </li>
          </ul> 
      </div>
+     <shopcart :delivery-price='seller.deliveryPrice' :min-price='seller.minPrice'></shopcart>
 	</div>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
+  import BScroll from 'better-scroll';
+  import shopcart from '../shopcart/shopcart.vue';
+
 	const ERR_OK = 0;
 
 	export default {
@@ -49,8 +53,22 @@
       },
       data() {
         return {
-          goods: {}
+          goods: {},
+          listHeight: [],
+          scrollY: Number
         };
+      },
+      computed: {
+        currentIndex() {
+          for (let i = 0; i < this.listHeight.length; i++) {
+            let height1 = this.listHeight[i];
+            let height2 = this.listHeight[i + 1];
+            if (this.scrollY >= height1 && this.scrollY < height2) {
+              return i;
+            }
+          }
+          return 0;
+        }
       },
       created() {
         this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
@@ -58,15 +76,53 @@
            response = response.data;
            if (response.errno === ERR_OK) {
               this.goods = response.data;
+              this.$nextTick(() => {
+                 this._initScroll();
+                 this._calculateHeight();
+              });
            }
         });
+      },
+      methods: {
+        _initScroll() {
+          this.menuScroll = new BScroll(this.$refs.menuwrapper, {
+            click: true
+          });
+          this.foodsScroll = new BScroll(this.$refs.foodswrapper, {
+             probeType: 3
+          });
+
+          this.foodsScroll.on('scroll', (pos) => {
+             this.scrollY = Math.abs(Math.round(pos.y));
+          });
+        },
+        _calculateHeight() {
+           let foodList = this.$refs.foodswrapper.getElementsByClassName('food-list-hook');
+           let height = 0;
+           this.listHeight.push(height);
+           for (var i = 0; i < foodList.length; i++) {
+              height += foodList[i].offsetHeight;
+              this.listHeight.push(height);
+           }
+        },
+        selectMenu(index, event) {
+            if (!event._constructed) {
+              return;
+            };
+            let foodList = this.$refs.foodswrapper.getElementsByClassName('food-list-hook');
+            let el = foodList[index];
+            this.foodsScroll.scrollToElement(el, 300);
+        }
+      },
+      components: {
+        'shopcart': shopcart
       }
 	};
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
 	@import '../../common/stylus/mixin.styl';
-
+  
 	.goods
 	  position:absolute
 	  display:flex
@@ -78,7 +134,7 @@
 	  	width:80px
 	  .menu-wrapper
 	  	flex-basis:80px
-	  	background-color: #f3f5f7
+	  	background-color: #f3f5f7   
 	  	.menu-item
 	  	  width:56px
 	  	  height:54px
