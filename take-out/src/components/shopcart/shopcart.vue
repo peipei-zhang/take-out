@@ -1,6 +1,6 @@
 <template>
 	<div class="shopcart">
-		<div class="content">
+		<div class="content" @click='toggleList'>
 			<div class="content-left">
 				<div class="logo-wrapper">
 					<div class="logo" :class="{'highlight':totalCount>0}">
@@ -11,27 +11,50 @@
 				<div class="price" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
 				<div class="desc">另需配送费￥{{deliveryPrice}}元</div>
 			</div>
-			<div class="content-right">
+			<div class="content-right" @click.stop='pay'>
 				<div class="pay" :class="payClass">
 					{{payDesc}}
 				</div>
 			</div>
 		</div>
+		<div class="ball-container"></div>
+		<transition name='slideUp'>
+		<div class="shopcart-list" v-show='listShow'>
+			<div class="list-header">
+				<h1 class="title">购物车</h1>
+				<span class='empty' @click='empty'>清空</span>
+			</div>
+			<div class="list-content" ref='listContent'>
+				<ul>
+					<li v-for='food in selectedFoods' class='food'>
+						<span class="name">{{food.name}}</span>
+						<div class="price">
+							<span>￥{{food.price*food.count}}</span>
+						</div>
+						<div class="cartcontrol-wrapper">
+							<cartControl :food='food'></cartControl>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		</transition>
+		<transition name='fade'>
+	       <div class="listMask" v-show='listShow' @click='hideList'></div>
+	    </transition>
 	</div>
 </template>
 
 <script>
+    import cartControl from '../cartControl/cartControl.vue';
+    import BScroll from 'better-scroll';
+
 	export default {
 		props: {
 			selectedFoods: {
               type: Array,
               default() {
-              	return [
-                  {
-                  	count: 1,
-                  	price: 20
-                  }
-              	];
+              	return [];
               }
 			},
 			deliveryPrice: {
@@ -42,6 +65,11 @@
 				type: Number,
 				default: 0
 			}
+		},
+		data() {
+          return {
+          	fold: true
+          };
 		},
 		computed: {
             totalPrice() {
@@ -74,12 +102,58 @@
             	} else {
                     return 'enough';
             	}
+            },
+            listShow() {
+            	if (this.totalCount === 0) {
+            		this.fold = true;
+            		return false;
+            	}
+            	let show = !this.fold;
+            	if (show) {
+            		if (!this.scroll) {
+            		  this.$nextTick(() => {
+            		   	  this.scroll = new BScroll(this.$refs.listContent, {
+            				 click: true
+            			  });
+            		  });
+            	    } else {
+            	    	this.scroll.refresh();
+            	    }
+            	}
+            	return show;
             }
+		},
+		methods: {
+             toggleList() {
+             	if (!this.totalCount) {
+             		return;
+             	}
+             	this.fold = !this.fold;
+             },
+             empty() {
+             	this.selectedFoods.forEach((food) => {
+             		food.count = 0;
+             	});
+             },
+             hideList() {
+             	this.fold = true;
+             },
+             pay() {
+               if (this.totalPrice < this.minPrice) {
+               	 return;
+               }
+               window.alert(`请支付${this.totalPrice}元`);
+             }
+		},
+		components: {
+		  'cartControl': cartControl
 		}
 	};
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+    @import '../../common/stylus/mixin.styl';
+
 	.shopcart
 	  position: fixed
 	  bottom:0
@@ -166,6 +240,74 @@
 	      	&.enough
 	      	  background-color: #00b43c
 	      	  color:#fff
+	  .shopcart-list
+	  	position:absolute
+	  	bottom:100%
+	  	left:0
+	  	z-index:-1
+	  	width:100%
+	  	&.slideUp-enter-active,&.slideUp-leave-active
+	  	  transition: all .7s
+	  	&.slideUp-enter
+	      transform: translate3D(0,0,0)
+	    &.slideUp-leave
+	      transform: translate3D(0,-100%,0)
+	    .list-header
+	      height:40px
+	      line-height:40px
+	      padding:0 18px
+	      background-color: #f3f5f7
+	      border-bottom:1px solid rgba(7,17,27,0.1)
+	      .title
+	      	float:left
+	      	color:rgb(7,17,27)
+	      	font-size:14px
+	      .empty
+	      	float:right
+	      	font-size:12px
+	      	color:rgb(0,160,220)
+	    .list-content
+	      padding:0 18px
+	      max-height:217px
+	      background-color: #FFF
+	      overflow:hidden
+	      .food
+	      	position:relative
+	      	padding:12px 0
+	      	box-sizing:border-box
+	      	border-bottom-1px(rgba(7,17,27,0.1))
+	      	height:auto
+	      	.name
+	      	  line-height:24px
+	      	  font-size:14px
+	      	  color:rgb(7,17,27)
+	      	.price
+	      	  position:absolute
+	      	  right:90px
+	      	  bottom:12px
+	      	  line-height:24px
+	      	  font-size:14px
+	      	  font-weight:700
+	      	  color:rgb(240,20,20)
+	      	.cartcontrol-wrapper
+	      	  position:absolute
+	      	  right:0
+	      	  bottom:6px
+	  .listMask
+	    position:fixed
+	    top:0
+	    left:0
+	    width:100%
+	    height:100%
+	    z-index:-10
+	    backgrop-filter:blur(10px)
+	    opacity:1
+	    background-color: rgba(7,17,27,0.6)
+	    &.fade-enter-active,&.fade-leave-active
+	      transition: all .7s
+	    &.fade-enter,&.fade-leave
+	      opacity:0
+	      background-color: rgba(7,17,27,0)	      
 </style>
 
 

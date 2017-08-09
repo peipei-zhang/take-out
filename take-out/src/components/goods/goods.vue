@@ -30,18 +30,22 @@
                            <span class="old" v-if='food.oldPrice'>￥{{food.oldPrice}}</span>
                         </div>
                      </div>
+                      <div class="cartcontrol-wrapper">
+                           <cartControl :food='food'></cartControl>
+                      </div>
                  </li>
                </ul>
            </li>
          </ul> 
      </div>
-     <shopcart :delivery-price='seller.deliveryPrice' :min-price='seller.minPrice'></shopcart>
+     <shopcart :selected-foods='selectedFoods' :delivery-price='seller.deliveryPrice' :min-price='seller.minPrice'></shopcart>
 	</div>
 </template>
 
 <script>
   import BScroll from 'better-scroll';
   import shopcart from '../shopcart/shopcart.vue';
+  import cartControl from '../cartControl/cartControl.vue';
 
 	const ERR_OK = 0;
 
@@ -58,18 +62,6 @@
           scrollY: Number
         };
       },
-      computed: {
-        currentIndex() {
-          for (let i = 0; i < this.listHeight.length; i++) {
-            let height1 = this.listHeight[i];
-            let height2 = this.listHeight[i + 1];
-            if (this.scrollY >= height1 && this.scrollY < height2) {
-              return i;
-            }
-          }
-          return 0;
-        }
-      },
       created() {
         this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
         this.$axios.get('/api/goods').then((response) => {
@@ -81,7 +73,31 @@
                  this._calculateHeight();
               });
            }
+           this.selectedFoods;
         });
+      },
+      computed: {
+        currentIndex() {
+          for (let i = 0; i < this.listHeight.length; i++) {
+            let height1 = this.listHeight[i];
+            let height2 = this.listHeight[i + 1];
+            if (this.scrollY >= height1 && this.scrollY < height2) {
+              return i;
+            }
+          }
+          return 0;
+        },
+        selectedFoods() {
+          let foods = [];
+          this.goods.forEach((good) => {
+                good.foods.forEach((food) => {
+                 if (food.count > 0) {
+                   foods.push(food);
+                 }
+             });
+          });
+          return foods;
+        }
       },
       methods: {
         _initScroll() {
@@ -89,6 +105,7 @@
             click: true
           });
           this.foodsScroll = new BScroll(this.$refs.foodswrapper, {
+            click: true,
              probeType: 3
           });
 
@@ -115,7 +132,8 @@
         }
       },
       components: {
-        'shopcart': shopcart
+        'shopcart': shopcart,
+        'cartControl': cartControl
       }
 	};
 </script>
@@ -184,7 +202,7 @@
 	  	  	  border:none
 	  	  	.icon
 	  	  	  flex-basis:57px
-	  	  	  margin-right:10px
+	  	  	  margin-right:10px  
 	  	  	.content
 	  	  	  flex-grow:1
 	  	  	  font-size:10px
@@ -204,12 +222,12 @@
 	  	  	  	  margin-right:12px
 	  	  	  .price
 	  	  	    font-weight:400
-	  	  	    line-height:24px
+	  	  	    line-height:24px 
 	  	  	    .now
 	  	  	      margin-right:8px
 	  	  	      font-size:14px
 	  	  	      color:rgb(240,20,20)
 	  	  	    .old
 	  	  	      text-decoration:line-through
-	  	  	      font-size:10px
+	  	  	      font-size:10px     
 </style>
