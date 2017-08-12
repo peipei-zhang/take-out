@@ -71,7 +71,7 @@
         .starItem
           width:15px
           height:15px
-          margin-right:16px
+          margin-right:4px
           &:last-child
             margin-right:0
           &.on

@@ -1,8 +1,10 @@
 <template>
-	<div class="title">
-		<div class="line"></div>
-		<div class="text">优惠信息</div>
-		<div class="line"></div>
+	<div class="detail-title">
+	    <div class="title-wrapper">
+		  <div class="line"></div>
+		  <div class="text">优惠信息</div>
+		  <div class="line"></div>
+		</div>
 	</div>
 </template>
 
@@ -13,7 +15,7 @@
 </script>
 
 <style lang='stylus' rel='stylesheet/stylus'>
-	.title
+	.detail-title
 	  display:flex
 	  .line
 	  	flex:1
