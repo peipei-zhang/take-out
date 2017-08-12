@@ -20,6 +20,10 @@ border-top-1px($color)
    	border-top:1px solid $color
    	content:' '
 
+border-none()
+  &:after
+    border-top:none
+
 bg-image(url,$w,$h,$repeat)
   background:url(url+'@2x.png')
   background-size:$w $h
