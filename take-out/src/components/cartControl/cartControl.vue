@@ -56,11 +56,10 @@
           font-size:24px
           line-height:24px
           color:rgb(0,160,220)
-          transition: all .4s linear
           transform:rotate(0deg)
         &.move-enter-active,&.move-leave-active
           transition: all .4s linear
-        &.move-enter,&.move-leave
+        &.move-enter,&.move-leave-active
           opacity:0
           transform:translate3D(24px,0,0)
           .inner

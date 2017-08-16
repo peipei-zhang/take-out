@@ -39,7 +39,7 @@
 					</div>
 					<detail-title></detail-title>
 					<ul v-if='seller.supports' class="supports">
-						<li v-for='(item,idx) in seller.supports' class='support-item'>
+						<li v-for='(item,idx) in seller.supports' class='support-item' key='idx'>
 							<span class='icon' :class='classMap[idx]'></span>
 							<span class="text">{{item.description}}</span>
 						</li>
@@ -215,10 +215,12 @@
         height:100%
         background:rgba(7,17,27,0.8)
         backdrop-filter:blur(10px)
+        opacity:1
         &.fade-enter-active,&.fade-leave-active
-          transition: all .3s ease-in-out
-        &.fade-enter,&.fade-leave
+          transition: all .5s
+        &.fade-enter,&.fade-leave-active
           opacity:0
+          background-color:rgba(7,17,27,0)
         .detail-wrapper
           min-height:100%
           width:100%

@@ -25,10 +25,10 @@
 				</div>
 			</div>
 			<split></split>
-			<ratingSelect :ratings='ratings' :select-type='selectType' :only-content='onlyContent' :desc='desc'></ratingSelect>
+			<ratingSelect :ratings='ratings' :select-type='selectType' :only-content='onlyContent' :desc='desc' @select='selectRating' @toggle="toggleContent"></ratingSelect>
 			<div class="rating-wrapper">
-				<ul>
-					<li v-for='rating in ratings' class='rating-item'>
+				<ul v-show='ratings && ratings.length'>
+					<li v-for='rating in ratings' class='rating-item' v-show='needShow(rating.rateType,rating.text)'>
 						<div class="avatar">
 							<img :src="rating.avatar" alt="用户头像" width="28px" height="28px">
 						</div>
@@ -102,6 +102,30 @@
       		let date = new Date(time);
       		return formatDate(date, 'yyyy-MM-dd hh:mm');
       	}
+      },
+      methods: {
+     	selectRating(type) {
+         this.selectType = type;
+         this.$nextTick(() => {
+           this.scroll.refresh();
+        });
+  	   },
+  	    toggleContent() {
+          this.onlyContent = !this.onlyContent;
+          this.$nextTick(() => {
+       	    this.scroll.refresh();
+         });
+     	},
+     	needShow(type, text) {
+          if (this.onlyContent && !text) {
+      	   return false;
+          }
+          if (this.selectType === ALL) {
+      	   return true;
+          } else {
+      	   return type === this.selectType;
+          }
+     	}
       },
       components: {
         star,

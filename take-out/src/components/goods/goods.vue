@@ -2,7 +2,7 @@
 	<div class="goods">
 	     <div class="menu-wrapper" ref='menuwrapper'>
          <ul>
-            <li v-for='(item,idx) in goods' class="menu-item" :class="{'current':idx===currentIndex}" @click='selectMenu(idx,$event)'>
+            <li v-for='(item,idx) in goods' class="menu-item" :class="{'current':idx===currentIndex}" @click='selectMenu(idx,$event)' key='idx'>
                <span class="text border-bottom-1px">
                  <span v-show='item.type>0' class="icon" :class='classMap[item.type]'></span>{{item.name}}
                </span>
@@ -39,7 +39,7 @@
          </ul> 
      </div>
      <shopcart :selected-foods='selectedFoods' :delivery-price='seller.deliveryPrice' :min-price='seller.minPrice'></shopcart>
-      <food :food='selectedfood' ref='food'></food>
+      <food :food='selected' ref='food'></food>
 	</div>
 </template>
 
@@ -62,7 +62,7 @@
           goods: {},
           listHeight: [],
           scrollY: Number,
-          selectedfood: Object
+          selected: Object
         };
       },
       created() {
@@ -92,7 +92,8 @@
         },
         selectedFoods() {
           let foods = [];
-          this.goods.forEach((good) => {
+          let goods = this.goods;
+             goods.forEach((good) => {
                 good.foods.forEach((food) => {
                  if (food.count > 0) {
                    foods.push(food);
@@ -137,7 +138,7 @@
           if (!event._constructed) {
               return;
             };
-            this.selectedfood = food;
+            this.selected = food;
             this.$refs.food.show();
         }
       },

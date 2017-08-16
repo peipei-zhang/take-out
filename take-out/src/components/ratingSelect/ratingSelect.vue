@@ -49,10 +49,13 @@ export default {
 			if (!event._constructed) {
 				return;
 			}
-			this.selectType = type;
+			console.log(this.ratings);
 		},
 		toggleContent(event) {
-            this.onlyContent = !this.onlyContent;
+			if (!event._constructed) {
+               return;
+			}
+            this.$emit('toggle');
 		}
 	},
 	computed: {

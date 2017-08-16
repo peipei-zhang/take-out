@@ -246,12 +246,11 @@
 	  	left:0
 	  	z-index:-1
 	  	width:100%
+	  	transform: translate3D(0,0,0)
 	  	&.slideUp-enter-active,&.slideUp-leave-active
-	  	  transition: all .7s
-	  	&.slideUp-enter
-	      transform: translate3D(0,0,0)
-	    &.slideUp-leave
-	      transform: translate3D(0,-100%,0)
+	  	  transition: all .5s
+	  	&.slideUp-enter,&.slideUp-leave-active
+	      transform: translate3D(0,100%,0)
 	    .list-header
 	      height:40px
 	      line-height:40px
@@ -305,7 +304,7 @@
 	    background-color: rgba(7,17,27,0.6)
 	    &.fade-enter-active,&.fade-leave-active
 	      transition: all .7s
-	    &.fade-enter,&.fade-leave
+	    &.fade-enter,&.fade-leave-active
 	      opacity:0
 	      background-color: rgba(7,17,27,0)	      
 </style>

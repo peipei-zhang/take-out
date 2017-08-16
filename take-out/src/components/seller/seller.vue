@@ -40,7 +40,7 @@
 		 		<p class="content">{{seller.bulletin}}</p>
 		 	</div>
 		 	<ul v-if='seller.supports' class="supports">
-				<li v-for='(item,idx) in seller.supports' class='support-item border-bottom-1px'>
+				<li v-for='(item,idx) in seller.supports' class='support-item border-bottom-1px' key='idx'>
 					<span class='icon' :class='classMap[idx]'></span>
 					<span class="text">{{item.description}}</span>
 				</li>

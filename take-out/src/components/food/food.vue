@@ -33,7 +33,7 @@
    	   	  <split></split>
    	   	  <div class="ratings">
    	   	  	 <div class="title">商品评价</div>
-   	   	  	 <ratingSelect :ratings='food.ratings' :select-type='selectType' :only-content='onlyContent' :desc='desc'></ratingSelect>
+   	   	  	 <ratingSelect :ratings='food.ratings' :select-type='selectType' :only-content='onlyContent' :desc='desc' @select='selectRating' @toggle='toggleContent'></ratingSelect>
    	   	  	 <div class="rating-wrapper">
    	   	  	 	<ul v-show='food.ratings && food.ratings.length'>
    	   	  	 		<li v-for='rating in food.ratings' class='rating-item' v-show='needShow(rating.rateType,rating.text)'>
@@ -116,6 +116,18 @@ export default {
       } else {
       	return type === this.selectType;
       }
+  	},
+  	selectRating(type) {
+      this.selectType = type;
+      this.$nextTick(() => {
+          this.scroll.refresh();
+      });
+  	},
+  	toggleContent() {
+       this.onlyContent = !this.onlyContent;
+       this.$nextTick(() => {
+       	  this.scroll.refresh();
+       });
   	}
   },
   filters: {
@@ -145,8 +157,8 @@ export default {
   	background-color: #FFF
   	&.move-enter-active,&.move-leave-active
   	  transition:all 0.4s linear
-	&.move-enter,&.move-leave
-	  transform:translate3D(100%,0,0)
+	  &.move-enter,&.move-leave-active
+	    transform:translate3D(100%,0,0)
 	.food
 	  .image-header
 	    position:relative
